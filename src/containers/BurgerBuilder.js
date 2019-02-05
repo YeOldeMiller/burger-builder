@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import withErrorHandler from '../hoc/withErrorHandler';
 import Burger from '../components/Burger/Burger';
 import BuildControls from '../components/BuildControls/BuildControls';
 import Modal from '../components/UI/Modal';
 import OrderSummary from '../components/Burger/OrderSummary';
+import Spinner from '../components/UI/Spinner';
+import axios from '../axios-orders';
 
 const INGREDIENT_PRICES = {
   base: 4,
@@ -12,17 +15,20 @@ const INGREDIENT_PRICES = {
   bacon: 0.7
 };
 
-export default class BurgerBuilder extends Component {
+class BurgerBuilder extends Component {
   state = {
-      ingredients: {
-        salad: 0,
-        bacon: 0,
-        cheese: 0,
-        meat: 0
-      },
+      ingredients: null,
       totalPrice: INGREDIENT_PRICES.base,
-      checkoutStarted: false
+      checkoutStarted: false,
+      loading: false,
+      error: false
   };
+
+  componentDidMount() {
+    axios.get('/ingredients.json')
+      .then(res => this.setState({ ingredients: res.data }))
+      .catch(err => this.setState({ error: true }));
+  }
 
   modIngredientHandler = type => mod => {
     this.setState(prevState => {
@@ -41,7 +47,16 @@ export default class BurgerBuilder extends Component {
     let checkoutStarted;
     switch(mode) {
       case 'proceed': {
-        return alert('Proceed to checkout');
+        this.setState({ loading: true });
+        const order = {
+          ingredients: this.state.ingredients,
+          price: this.state.totalPrice
+        }
+        console.log(this.state.loading);
+        return axios.post('/orders.json', order)
+          .then(console.log)
+          .catch(console.log)
+          .finally(setTimeout(() => this.setState({ loading: false, checkoutStarted: false }), 500));
       }
       case 'start': {
         checkoutStarted = true;
@@ -57,32 +72,45 @@ export default class BurgerBuilder extends Component {
   };
 
   render() {
-    const disabledInputs = { ...this.state.ingredients };
-    for(let key in disabledInputs) {
-      disabledInputs[key] = disabledInputs[key] <= 0;
-    }
-
-    return (
-      <>
-        <Modal
-          show={this.state.checkoutStarted}
-          clear={() => this.checkoutHandler('cancel')}
-        >
-          <OrderSummary
+    let buildArea = this.state.error ? <p style={{ textAlign: 'center' }}>Failed retrieving application data</p> : <Spinner />;
+    let orderSummary = null;
+    if(this.state.ingredients) {
+      const disabledInputs = { ...this.state.ingredients };
+      for(let key in disabledInputs) {
+        disabledInputs[key] = disabledInputs[key] <= 0;
+      }
+      if(this.state.loading) orderSummary = <Spinner />;
+      else orderSummary = (<OrderSummary
             ingredients={this.state.ingredients}
             price={this.state.totalPrice}
             checkoutProceed={() => this.checkoutHandler('proceed')}
             checkoutCancel={() => this.checkoutHandler('cancel')}
           />
+        );
+      buildArea = (
+        <>
+          <Burger recipe={this.state.ingredients} />
+          <BuildControls
+            price={this.state.totalPrice}
+            addOrRemove={this.modIngredientHandler}
+            checkout={() => this.checkoutHandler('start')}
+            disabled={disabledInputs}
+          />
+        </>
+      );
+    }
+    
+    return (
+      <>
+        <Modal
+          show={this.state.checkoutStarted}
+          clear={() => this.checkoutHandler('cancel')}
+        >{orderSummary}
         </Modal>
-        <Burger recipe={this.state.ingredients} />
-        <BuildControls
-          price={this.state.totalPrice}
-          addOrRemove={this.modIngredientHandler}
-          checkout={() => this.checkoutHandler('start')}
-          disabled={disabledInputs}
-        />
+        {buildArea}
       </>
     );
   }
 };
+
+export default withErrorHandler(BurgerBuilder, axios);
