@@ -1,11 +1,11 @@
-.NavLink {
+.NavItem {
   margin: 10px 0;
   box-sizing: border-box;
   display: block;
   width: 100%;
 }
 
-.NavLink a {
+.NavItem a {
   color: #8f5c2c;
   text-decoration: none;
   width: 100%;
@@ -13,14 +13,14 @@
   display: block;
 }
 
-.NavLink a:hover,
-.NavLInk a:active,
-.Navlink a.active {
+.NavItem a:hover,
+.NavItem a:active,
+.NavItem a.active {
   color: #40a4c8;
 }
 
 @media (min-width: 500px) {
-  .NavLink {
+  .NavItem {
     margin: 0;
     display: flex;
     height: 100%;
@@ -28,16 +28,16 @@
     align-items: center;
   }
   
-  .NavLink a {
+  .NavItem a {
     color: white;
     height: 100%;
     padding: 16px 10px;
     border-bottom: 4px solid transparent;
   }
   
-  .NavLink a:hover,
-  .NavLInk a:active,
-  .Navlink a.active {
+  .NavItem a:hover,
+  .NavItem a:active,
+  .NavItem a.active {
     background-color: #8f5c2c;
     border-bottom: 4px solid #40a4c8;
     color: white;

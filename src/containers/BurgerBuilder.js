@@ -47,16 +47,11 @@ class BurgerBuilder extends Component {
     let checkoutStarted;
     switch(mode) {
       case 'proceed': {
-        this.setState({ loading: true });
-        const order = {
-          ingredients: this.state.ingredients,
-          price: this.state.totalPrice
-        }
-        console.log(this.state.loading);
-        return axios.post('/orders.json', order)
-          .then(console.log)
-          .catch(console.log)
-          .finally(setTimeout(() => this.setState({ loading: false, checkoutStarted: false }), 500));
+        return this.props.history.push({
+          pathname: '/checkout',
+          search: '?' + encodeURI(Object.entries(this.state.ingredients).join('&').replace(/,/g,'=')),
+          state: this.state.totalPrice
+        });
       }
       case 'start': {
         checkoutStarted = true;
@@ -72,21 +67,22 @@ class BurgerBuilder extends Component {
   };
 
   render() {
-    let buildArea = this.state.error ? <p style={{ textAlign: 'center' }}>Failed retrieving application data</p> : <Spinner />;
+    let buildArea = this.state.error ? <p style={{ textAlign: 'center' }}>Could not retrieve application data</p> : <Spinner />;
     let orderSummary = null;
     if(this.state.ingredients) {
       const disabledInputs = { ...this.state.ingredients };
       for(let key in disabledInputs) {
         disabledInputs[key] = disabledInputs[key] <= 0;
       }
-      if(this.state.loading) orderSummary = <Spinner />;
-      else orderSummary = (<OrderSummary
+      orderSummary = this.state.loading ? <Spinner />
+      : (<OrderSummary
             ingredients={this.state.ingredients}
             price={this.state.totalPrice}
             checkoutProceed={() => this.checkoutHandler('proceed')}
             checkoutCancel={() => this.checkoutHandler('cancel')}
           />
         );
+
       buildArea = (
         <>
           <Burger recipe={this.state.ingredients} />
