@@ -18,7 +18,8 @@ export default class ContactInfo extends Component {
           required: true
         },
         value: '',
-        valid: false
+        valid: false,
+        touched: false
       },
       email: {
         elementType: 'input',
@@ -30,7 +31,8 @@ export default class ContactInfo extends Component {
           required: true
         },
         value: '',
-        valid: false
+        valid: false,
+        touched: false
       },
       street: {
         elementType: 'input',
@@ -42,7 +44,8 @@ export default class ContactInfo extends Component {
           required: true
         },
         value: '',
-        valid: false
+        valid: false,
+        touched: false
       },
       zipcode: {
         elementType: 'input',
@@ -51,10 +54,13 @@ export default class ContactInfo extends Component {
           placeholder: 'Postal Code'
         },
         validation: {
-          required: true
+          required: true,
+          minLength: 5,
+          maxLength: 12
         },
         value: '',
-        valid: false
+        valid: false,
+        touched: false
       },
       country: {
         elementType: 'input',
@@ -65,7 +71,9 @@ export default class ContactInfo extends Component {
         validation: {
           required: true
         },
-        value: ''
+        value: '',
+        valid: false,
+        touched: false
       },
       deliveryMethod: {
         elementType: 'select',
@@ -76,33 +84,37 @@ export default class ContactInfo extends Component {
             { value: 'express', display: 'Express' }
           ]
         },
-        value: 'economy'
+        value: 'economy',
+        valid: true
       }
     },
-    loading: false
+    loading: false,
+    formIsValid: false
   };
 
   formInputHandler = ({ target: { value } }, id) => {
-    
     this.setState(state => {
-      const valid = this.validateFormData(value, state.orderForm[id].validation);
+      const valid = this.validateFormData(value, state.orderForm[id].validation),
+        formIsValid = valid && !Object.keys(state.orderForm).some(e => !state.orderForm[e].valid);
       const orderForm = {
         ...state.orderForm,
         [id]: {
           ...state.orderForm[id],
           value,
-          valid
+          valid,
+          touched: true
         }
       }
-      return { orderForm };
+      return { orderForm, formIsValid };
     });
   }
 
   validateFormData(value, rules) {
-    let isValid = false;
-    if(rules.required) {
-      isValid = value.trim() !== '';
-    }
+    if(!rules) return true;
+    let isValid = true;
+    if(rules.required) isValid = isValid && value.trim() !== '';
+    if(rules.minLength) isValid = isValid && value.length >= rules.minLength;
+    if(rules.maxLength) isValid = isValid && value.length <= rules.maxLength;
     return isValid;
   }
 
@@ -137,16 +149,19 @@ export default class ContactInfo extends Component {
     }
     let form = (
       <form onSubmit={this.orderHandler}>
-        {formArray.map(({ id, config: { elementType, elementConfig, value } }) => (
+        {formArray.map(({ id, config: { elementType, elementConfig, validation, value, valid, touched } }) => (
         <FormInput
           key={id}
           elementType={elementType}
           elementConfig={elementConfig}
           value={value}
+          validation={!!validation}
+          valid={valid}
+          touched={touched}
           change={e => this.formInputHandler(e, id)}
         />)
         )}
-        <Button btnType="Success">PLACE ORDER</Button>
+        <Button btnType="Success" disabled={!this.state.formIsValid}>PLACE ORDER</Button>
       </form>
     );
     if(this.state.loading) form = <Spinner />;

@@ -1,13 +1,15 @@
 import React from 'react';
 import styles from './FormInput.module.css';
 
-export default function FormInput({ elementType, elementConfig, value, change }) {
+export default function FormInput({ elementType, elementConfig, value, valid, validation, touched, change }) {
   let inputElement = null;
+  const inputClasses = [styles.InputElement];
+  if(!valid && validation && touched) inputClasses.push(styles.Invalid);
   switch(elementType) {
     case('select'):
       inputElement = (
         <select
-          className={styles.InputElement}
+          className={inputClasses.join(' ')}
           value={value}
           onChange={change}
         >{elementConfig.options.map(el => (
@@ -16,7 +18,7 @@ export default function FormInput({ elementType, elementConfig, value, change })
       break;
     case('textarea'):
       inputElement = <textarea
-        className={styles.InputElement}
+        className={inputClasses.join(' ')}
         {...elementConfig}
         value={value}
         onChange={change}
@@ -24,7 +26,7 @@ export default function FormInput({ elementType, elementConfig, value, change })
       break;
     default:
       inputElement = <input
-        className={styles.InputElement}
+        className={inputClasses.join(' ')}
         {...elementConfig}
         value={value}
         onChange={change}
