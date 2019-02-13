@@ -9,7 +9,7 @@ const controls = [
   { label: 'Meat', type: 'meat' }
 ];
 
-export default function BuildControls({ price, addOrRemove, disabled, checkout }) {
+export default function BuildControls({ price, add, remove, disabled, checkout }) {
   const disallowOrder = Object.values(disabled).every(e => e);
   return (
     <div className={styles.BuildControls}>
@@ -18,7 +18,8 @@ export default function BuildControls({ price, addOrRemove, disabled, checkout }
         <ControlGroup
           key={ctl.label}
           label={ctl.label}
-          click={() => addOrRemove(ctl.type)}
+          add={() => add(ctl.type)}
+          remove={() => remove(ctl.type)}
           disabled={disabled[ctl.type]}
         />
       )}

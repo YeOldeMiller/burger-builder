@@ -1,18 +1,18 @@
 import React from 'react';
 import styles from './ControlGroup.module.css';
 
-export default function ControlGroup({ label, click, disabled }) {
+export default function ControlGroup({ label, add, remove, disabled }) {
   return (
     <div className={styles.ControlGroup}>
       <div className={styles.Label}>{label}</div>
       <button
         className={styles.Less}
-        onClick={type => click(type)(-1)}
+        onClick={remove}
         disabled={disabled}
       >Less</button>
       <button
         className={styles.More}
-        onClick={type => click(type)(1)}
+        onClick={add}
       >More</button>
     </div>
   )
