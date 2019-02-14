@@ -25,13 +25,7 @@ class BurgerBuilder extends Component {
   checkoutHandler = mode => {
     let checkoutStarted;
     switch(mode) {
-      case 'proceed': {
-        return this.props.history.push({
-          pathname: '/checkout',
-          search: '?' + encodeURI(Object.entries(this.props.ingredients).join('&').replace(/,/g,'=')),
-          state: this.props.price
-        });
-      }
+      case 'proceed': return this.props.history.push('/checkout');
       case 'start': {
         checkoutStarted = true;
         break;
