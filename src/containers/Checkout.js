@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import CheckoutSummary from '../components/Order/CheckoutSummary';
 import ContactInfo from './ContactInfo';
 
 class Checkout extends Component {
   render() {
+    if(!this.props.ingredients) return <Redirect to="/" />
     return (
       <>
         <CheckoutSummary
@@ -20,7 +21,7 @@ class Checkout extends Component {
 };
 
 const mapStateToProps = state => ({
-  ingredients: state.ingredients
+  ingredients: state.burger.ingredients
 });
 
 export default connect(mapStateToProps)(Checkout);

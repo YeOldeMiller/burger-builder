@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { orderProcess } from '../store/actions/';
 import axios from '../axios-orders';
 import Button from '../components/UI/Button';
 import Spinner from '../components/UI/Spinner';
 import FormInput from '../components/UI/FormInput';
 import styles from './ContactInfo.module.css';
+import withErrorHandler from '../hoc/withErrorHandler';
 
 class ContactInfo extends Component {
   state = {
@@ -121,23 +123,16 @@ class ContactInfo extends Component {
 
   orderHandler = e => {
     e.preventDefault();
-    this.setState({ loading: true });
-      const orderData = {};
-      for(let el in this.state.orderForm) {
-        orderData[el] = this.state.orderForm[el].value;
-      }
-      const order = {
-        ingredients: this.props.ingredients,
-        price: this.props.price,
-        orderData
-      }
-      return axios.post('/orders.json', order)
-        .then(console.log)
-        .catch(console.log)
-        .finally(setTimeout(() => {
-          this.setState({ loading: false });
-          this.props.history.push('/')
-        }, 500));
+    const orderData = {};
+    for(let el in this.state.orderForm) {
+      orderData[el] = this.state.orderForm[el].value;
+    }
+    const order = {
+      ingredients: this.props.ingredients,
+      price: this.props.price,
+      orderData
+    }
+    this.props.onOrderProcess(order);
   }
   
   render() {
@@ -165,7 +160,7 @@ class ContactInfo extends Component {
         <Button btnType="Success" disabled={!this.state.formIsValid}>PLACE ORDER</Button>
       </form>
     );
-    if(this.state.loading) form = <Spinner />;
+    if(this.props.loading) form = <Spinner />;
 
     return (
       <div className={styles.ContactInfo}>
@@ -177,8 +172,12 @@ class ContactInfo extends Component {
 };
 
 const mapStateToProps = state => ({
-  ingredients: state.ingredients,
-  price: state.totalPrice
-});
+  ingredients: state.burger.ingredients,
+  price: state.burger.totalPrice,
+  loading: state.order.loading
+}),
+  mapDispatchToProps = dispatch => ({
+    onOrderProcess: data => dispatch(orderProcess(data))
+  });
 
-export default connect(mapStateToProps)(ContactInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactInfo, axios));

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actionTypes from '../store/actions';
+import * as builderActions from '../store/actions/';
 import withErrorHandler from '../hoc/withErrorHandler';
 import Burger from '../components/Burger/Burger';
 import BuildControls from '../components/BuildControls/BuildControls';
@@ -11,16 +11,12 @@ import axios from '../axios-orders';
 
 class BurgerBuilder extends Component {
   state = {
-      checkoutStarted: false,
-      loading: false,
-      error: false
+      checkoutStarted: false
   };
 
-  // componentDidMount() {
-  //   axios.get('/ingredients.json')
-  //     .then(res => this.setState({ ingredients: res.data }))
-  //     .catch(err => this.setState({ error: true }));
-  // }
+  componentDidMount() {
+    this.props.onInitIngredients();
+  }
 
   checkoutHandler = mode => {
     let checkoutStarted;
@@ -40,21 +36,21 @@ class BurgerBuilder extends Component {
   };
 
   render() {
-    let buildArea = this.state.error ? <p style={{ textAlign: 'center' }}>Could not retrieve application data</p> : <Spinner />;
+    let buildArea = this.props.error ? <p style={{ textAlign: 'center' }}>Could not retrieve application data</p> : <Spinner />;
     let orderSummary = null;
     if(this.props.ingredients) {
       const disabledInputs = { ...this.props.ingredients };
       for(let key in disabledInputs) {
         disabledInputs[key] = disabledInputs[key] <= 0;
       }
-      orderSummary = this.state.loading ? <Spinner />
-      : (<OrderSummary
-            ingredients={this.props.ingredients}
-            price={this.props.price}
-            checkoutProceed={() => this.checkoutHandler('proceed')}
-            checkoutCancel={() => this.checkoutHandler('cancel')}
-          />
-        );
+      orderSummary = (
+        <OrderSummary
+          ingredients={this.props.ingredients}
+          price={this.props.price}
+          checkoutProceed={() => this.checkoutHandler('proceed')}
+          checkoutCancel={() => this.checkoutHandler('cancel')}
+        />
+      );
 
       buildArea = (
         <>
@@ -84,12 +80,14 @@ class BurgerBuilder extends Component {
 };
 
 const mapStateToProps = state => ({
-  ingredients: state.ingredients,
-  price: state.totalPrice
+  ingredients: state.burger.ingredients,
+  price: state.burger.totalPrice,
+  error: state.burger.error
 }),
   mapDispatchToProps = dispatch => ({
-    onIngredientAdd: ingrName => dispatch({ type: actionTypes.ADD_INGREDIENT, payload: ingrName }),
-    onIngredientRemove: ingrName => dispatch({ type: actionTypes.REMOVE_INGREDIENT, payload: ingrName })
+    onIngredientAdd: ingrName => dispatch(builderActions.addIngredient(ingrName)),
+    onIngredientRemove: ingrName => dispatch(builderActions.removeIngredient(ingrName)),
+    onInitIngredients: () => dispatch(builderActions.initIngredients())
   });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
