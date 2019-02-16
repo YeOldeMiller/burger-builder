@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as builderActions from '../store/actions/';
+import * as actions from '../store/actions/';
 import withErrorHandler from '../hoc/withErrorHandler';
 import Burger from '../components/Burger/Burger';
 import BuildControls from '../components/BuildControls/BuildControls';
@@ -21,15 +21,15 @@ class BurgerBuilder extends Component {
   checkoutHandler = mode => {
     let checkoutStarted;
     switch(mode) {
-      case 'proceed': return this.props.history.push('/checkout');
-      case 'start': {
+      case 'proceed':
+        this.props.onOrderInit();
+        return this.props.history.push('/checkout');
+      case 'start':
         checkoutStarted = true;
         break;
-      }
-      case 'cancel': {
+      case 'cancel':
         checkoutStarted = false;
         break;
-      }
       default: return;
     }
     this.setState({ checkoutStarted })
@@ -85,9 +85,10 @@ const mapStateToProps = state => ({
   error: state.burger.error
 }),
   mapDispatchToProps = dispatch => ({
-    onIngredientAdd: ingrName => dispatch(builderActions.addIngredient(ingrName)),
-    onIngredientRemove: ingrName => dispatch(builderActions.removeIngredient(ingrName)),
-    onInitIngredients: () => dispatch(builderActions.initIngredients())
+    onIngredientAdd: ingrName => dispatch(actions.addIngredient(ingrName)),
+    onIngredientRemove: ingrName => dispatch(actions.removeIngredient(ingrName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
+    onOrderInit: () => dispatch(actions.orderInit())
   });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));

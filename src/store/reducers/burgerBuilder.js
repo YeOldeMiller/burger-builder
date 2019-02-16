@@ -38,6 +38,7 @@ const builderReducer = (state = initialState, action) => {
     case actionTypes.SET_INGREDIENTS:
       return {
         ...state,
+        totalPrice: initialState.totalPrice,
         ingredients: {
           salad: action.payload.salad,
           bacon: action.payload.bacon,

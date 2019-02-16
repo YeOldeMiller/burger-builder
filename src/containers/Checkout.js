@@ -6,7 +6,7 @@ import ContactInfo from './ContactInfo';
 
 class Checkout extends Component {
   render() {
-    if(!this.props.ingredients) return <Redirect to="/" />
+    if(!this.props.ingredients || this.props.done) return <Redirect to="/" />
     return (
       <>
         <CheckoutSummary
@@ -21,7 +21,8 @@ class Checkout extends Component {
 };
 
 const mapStateToProps = state => ({
-  ingredients: state.burger.ingredients
+  ingredients: state.burger.ingredients,
+  done: state.order.checkoutComplete
 });
 
 export default connect(mapStateToProps)(Checkout);
