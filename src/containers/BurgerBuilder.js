@@ -25,8 +25,13 @@ class BurgerBuilder extends Component {
         this.props.onOrderInit();
         return this.props.history.push('/checkout');
       case 'start':
-        checkoutStarted = true;
-        break;
+        if(this.props.isAuthenticated) {
+          checkoutStarted = true;
+          break;
+        } else {
+          this.props.history.push('/auth');
+          break;
+        }
       case 'cancel':
         checkoutStarted = false;
         break;
@@ -59,6 +64,7 @@ class BurgerBuilder extends Component {
             price={this.props.price}
             add={this.props.onIngredientAdd}
             remove={this.props.onIngredientRemove}
+            auth={this.props.isAuthenticated}
             checkout={() => this.checkoutHandler('start')}
             disabled={disabledInputs}
           />
@@ -82,7 +88,8 @@ class BurgerBuilder extends Component {
 const mapStateToProps = state => ({
   ingredients: state.burger.ingredients,
   price: state.burger.totalPrice,
-  error: state.burger.error
+  error: state.burger.error,
+  isAuthenticated: !!state.auth.idToken
 }),
   mapDispatchToProps = dispatch => ({
     onIngredientAdd: ingrName => dispatch(actions.addIngredient(ingrName)),

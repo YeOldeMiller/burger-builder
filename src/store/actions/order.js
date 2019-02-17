@@ -15,10 +15,10 @@ const orderFail = error => ({
   error
 });
 
-export const orderProcess = orderData => (
+export const orderProcess = (orderData, token) => (
   dispatch => {
     dispatch(orderStart());
-    axios.post('/orders.json', orderData)
+    axios.post('/orders.json?auth=' + token, orderData)
       .then(res => dispatch(orderSuccess(res.data.name, orderData)))
       .catch(err => dispatch(orderFail(err)));
   }
@@ -42,10 +42,11 @@ const fetchOrdersStart = () => ({
   type: actionTypes.FETCH_ORDERS_START
 });
 
-export const fetchOrders = () => (
+export const fetchOrders = (token, userId) => (
   dispatch => {
     dispatch(fetchOrdersStart());
-    axios.get('/orders.json')
+    const query = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
+    axios.get('/orders.json' + query)
       .then(res => {
         const orders = [];
         for(let key in res.data) {

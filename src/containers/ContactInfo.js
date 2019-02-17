@@ -31,7 +31,8 @@ class ContactInfo extends Component {
           placeholder: 'Email'
         },
         validation: {
-          required: true
+          required: true,
+          isEmail: true
         },
         value: '',
         valid: false,
@@ -97,8 +98,7 @@ class ContactInfo extends Component {
 
   formInputHandler = ({ target: { value } }, id) => {
     this.setState(state => {
-      const valid = this.validateFormData(value, state.orderForm[id].validation),
-        formIsValid = valid && !Object.keys(state.orderForm).some(e => !state.orderForm[e].valid);
+      const valid = this.validateFormData(value, state.orderForm[id].validation);
       const orderForm = {
         ...state.orderForm,
         [id]: {
@@ -107,7 +107,8 @@ class ContactInfo extends Component {
           valid,
           touched: true
         }
-      }
+      };
+      const formIsValid = Object.keys(orderForm).every(e => orderForm[e].valid);
       return { orderForm, formIsValid };
     });
   }
@@ -118,8 +119,9 @@ class ContactInfo extends Component {
     if(rules.required) isValid = isValid && value.trim() !== '';
     if(rules.minLength) isValid = isValid && value.length >= rules.minLength;
     if(rules.maxLength) isValid = isValid && value.length <= rules.maxLength;
+    if(rules.isEmail) isValid = isValid && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     return isValid;
-  }
+  };
 
   orderHandler = e => {
     e.preventDefault();
@@ -130,9 +132,10 @@ class ContactInfo extends Component {
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.price,
-      orderData
+      orderData,
+      userId: this.props.userId
     }
-    this.props.onOrderProcess(order);
+    this.props.onOrderProcess(order, this.props.token);
   }
   
   render() {
@@ -174,10 +177,12 @@ class ContactInfo extends Component {
 const mapStateToProps = state => ({
   ingredients: state.burger.ingredients,
   price: state.burger.totalPrice,
-  loading: state.order.loading
+  loading: state.order.loading,
+  token: state.auth.idToken,
+  userId: state.auth.userId
 }),
   mapDispatchToProps = dispatch => ({
-    onOrderProcess: data => dispatch(orderProcess(data))
+    onOrderProcess: (data, token) => dispatch(orderProcess(data, token))
   });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactInfo, axios));

@@ -4,7 +4,7 @@ import Logo from '../Logo';
 import NavItems from '../Navigation/NavItems';
 import Backdrop from '../UI/Backdrop';
 
-export default function SideDrawer({ show, clear }) {
+export default function SideDrawer({ show, clear, auth }) {
   const style = [styles.SideDrawer];
   if(show) style.push(styles.Open);
   else style.push(styles.Close);
@@ -15,7 +15,7 @@ export default function SideDrawer({ show, clear }) {
           <Logo />
         </div>
         <nav>
-          <NavItems />
+          <NavItems auth={auth} />
         </nav>
       </div>
       <Backdrop show={show} clear={clear}/>

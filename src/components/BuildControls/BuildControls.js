@@ -9,7 +9,7 @@ const controls = [
   { label: 'Meat', type: 'meat' }
 ];
 
-export default function BuildControls({ price, add, remove, disabled, checkout }) {
+export default function BuildControls({ price, add, remove, auth, disabled, checkout }) {
   const disallowOrder = Object.values(disabled).every(e => e);
   return (
     <div className={styles.BuildControls}>

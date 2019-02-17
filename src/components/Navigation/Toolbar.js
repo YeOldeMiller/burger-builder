@@ -4,14 +4,14 @@ import Logo from '../Logo';
 import NavItems from '../Navigation/NavItems';
 import DrawerToggle from './DrawerToggle';
 
-export default function Toolbar({ toggle }) {
+export default function Toolbar({ toggle, auth }) {
   return (
     <header className={styles.Toolbar}>
       <DrawerToggle toggle={toggle} />
       <div className={styles.Logo}>
         <Logo />
       </div>
-      <nav className={styles.DesktopOnly}><NavItems /></nav>
+      <nav className={styles.DesktopOnly}><NavItems auth={auth} /></nav>
     </header>
   );
 };

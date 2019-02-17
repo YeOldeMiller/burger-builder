@@ -1,12 +1,15 @@
 import React from 'react';
 import styles from './NavItems.module.css';
-import NavLink from './NavItem';
+import NavItem from './NavItem';
 
-export default function NavItems() {
+export default function NavItems({ auth }) {
   return (
     <ul className={styles.NavItems}>
-      <NavLink link="/" exact>Burger Builder</NavLink>
-      <NavLink link="/orders">Orders</NavLink>
+      <NavItem link="/" exact>Burger Builder</NavItem>
+      {auth && <NavItem link="/orders">Orders</NavItem>}
+      {auth
+      ? <NavItem link="/logout">Logout</NavItem>
+      : <NavItem link="/auth">Log in / Register</NavItem>}
     </ul>
   );
 };
