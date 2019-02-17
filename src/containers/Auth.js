@@ -5,7 +5,7 @@ import * as actions from '../store/actions';
 import FormInput from '../components/UI/FormInput';
 import Button from '../components/UI/Button';
 import Spinner from '../components/UI/Spinner';
-// import validateFormData from '../utility/validateFormData';
+import validateFormData from '../utility/validateFormData';
 import styles from './Auth.module.css';
 
 class Auth extends Component {
@@ -44,16 +44,6 @@ class Auth extends Component {
     signUpMode: true
   };
 
-  validateFormData(value, rules) {
-    if(!rules) return true;
-    let isValid = true;
-    if(rules.required) isValid = isValid && value.trim() !== '';
-    if(rules.minLength) isValid = isValid && value.length >= rules.minLength;
-    if(rules.maxLength) isValid = isValid && value.length <= rules.maxLength;
-    if(rules.isEmail) isValid = isValid && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    return isValid;
-  }
-
   switchAuthModeHandler = () => {
     this.setState(state => ({
       signUpMode: !state.signUpMode
@@ -62,7 +52,7 @@ class Auth extends Component {
 
   formInputHandler = ({ target: { value } }, id) => {
     this.setState(state => {
-      const valid = this.validateFormData(value, state.controls[id].validation);
+      const valid = validateFormData(value, state.controls[id].validation);
       const controls = {
         ...state.controls,
         [id]: {
