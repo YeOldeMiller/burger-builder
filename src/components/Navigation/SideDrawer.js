@@ -10,7 +10,7 @@ export default function SideDrawer({ show, clear, auth }) {
   else style.push(styles.Close);
   return (
     <>
-      <div className={style.join(' ')}>
+      <div className={style.join(' ')} onClick={clear}>
         <div className={styles.Logo}>
           <Logo />
         </div>

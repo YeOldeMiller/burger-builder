@@ -7,6 +7,7 @@ import Spinner from '../components/UI/Spinner';
 import FormInput from '../components/UI/FormInput';
 import styles from './ContactInfo.module.css';
 import withErrorHandler from '../hoc/withErrorHandler';
+import validateFormData from '../utility/validateFormData';
 
 class ContactInfo extends Component {
   state = {
@@ -98,7 +99,7 @@ class ContactInfo extends Component {
 
   formInputHandler = ({ target: { value } }, id) => {
     this.setState(state => {
-      const valid = this.validateFormData(value, state.orderForm[id].validation);
+      const valid = validateFormData(value, state.orderForm[id].validation);
       const orderForm = {
         ...state.orderForm,
         [id]: {
@@ -112,16 +113,6 @@ class ContactInfo extends Component {
       return { orderForm, formIsValid };
     });
   }
-
-  validateFormData(value, rules) {
-    if(!rules) return true;
-    let isValid = true;
-    if(rules.required) isValid = isValid && value.trim() !== '';
-    if(rules.minLength) isValid = isValid && value.length >= rules.minLength;
-    if(rules.maxLength) isValid = isValid && value.length <= rules.maxLength;
-    if(rules.isEmail) isValid = isValid && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    return isValid;
-  };
 
   orderHandler = e => {
     e.preventDefault();
