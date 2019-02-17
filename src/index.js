@@ -10,6 +10,7 @@ import authReducer from './store/reducers/auth';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+// require('dotenv').config();
 
 const rootReducer = combineReducers({
   burger: builderReducer,

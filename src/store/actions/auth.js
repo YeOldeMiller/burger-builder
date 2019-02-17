@@ -31,7 +31,7 @@ const trackAuthTimeout = expTime => (
 export const auth = (email, password, signup) => (
   dispatch => {
     dispatch(authStart());
-    const url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/' + (signup ? 'signupNewUser' : 'verifyPassword') + '?key=AIzaSyDovPX-fwrI0FHTJMFhzLJAVj3U7uvr3MU'
+    const url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/' + (signup ? 'signupNewUser' : 'verifyPassword') + '?key=' + process.env.REACT_APP_FIREBASE_KEY
     const authData = {
       email,
       password,

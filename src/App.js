@@ -20,7 +20,7 @@ class App extends Component {
     let routes = (
       <>
         <Switch>
-          <Route path="/auth" exact component={Auth} />
+          <Route path="/auth" exact render={() => (<Suspense fallback={<Spinner />}><Auth /></Suspense>)} />
           <Route path="/" exact component={BurgerBuilder} />
           <Redirect to="/" />
         </Switch>
