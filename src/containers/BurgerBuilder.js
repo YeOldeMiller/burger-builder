@@ -9,7 +9,7 @@ import OrderSummary from '../components/Burger/OrderSummary';
 import Spinner from '../components/UI/Spinner';
 import axios from '../axios-orders';
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
       checkoutStarted: false
   };
