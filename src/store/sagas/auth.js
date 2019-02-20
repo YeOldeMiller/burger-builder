@@ -33,3 +33,17 @@ export function* authSaga({ payload: { email, password, signup }}) {
     yield put(actions.authFail(err.response.data.error));
   }
 }
+
+export function* authCheckStateSaga(action) {
+  const loginData = yield JSON.parse(localStorage.getItem('login'));
+  if(!loginData) put(actions.logout());
+  else {
+    const { idToken, localId, expDate } = loginData,
+      newTimer = (new Date(expDate).getTime() - Date.now()) / 1000 | 0;
+    if(newTimer <= 0) yield put(actions.logout());
+    else {
+      yield put(actions.authSuccess({ idToken, localId }));
+      yield put(actions.trackAuthTimeout(newTimer));
+    }
+  }
+}

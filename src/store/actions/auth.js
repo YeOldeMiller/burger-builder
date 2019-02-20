@@ -1,4 +1,3 @@
-import axios from 'axios';
 import * as actionTypes from './actionTypes';
 
 export const authStart = () => ({
@@ -33,18 +32,6 @@ export const auth = (email, password, signup) => ({
   payload: { email, password, signup }
 });
 
-export const authCheckState = () => (
-  dispatch => {
-    const loginData = JSON.parse(localStorage.getItem('login'));
-    if(!loginData) dispatch(logout());
-    else {
-      const { idToken, localId, expDate } = loginData,
-        newTimer = (new Date(expDate).getTime() - Date.now()) / 1000 | 0;
-      if(newTimer <= 0) dispatch(logout());
-      else {
-        dispatch(authSuccess({ idToken, localId }));
-        dispatch(trackAuthTimeout(newTimer));
-      }
-    }
-  }
-);
+export const authCheckState = () => ({
+  type: actionTypes.AUTH_INITIATE_AUTO_LOGIN
+});
