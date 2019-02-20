@@ -1,55 +1,37 @@
 import axios from 'axios';
 import * as actionTypes from './actionTypes';
 
-const authStart = () => ({
+export const authStart = () => ({
   type: actionTypes.AUTH_START
 });
 
-const authSuccess = authData => ({
+export const authSuccess = authData => ({
   type: actionTypes.AUTH_SUCCESS,
   payload: authData
 });
 
-const authFail = error => ({
+export const authFail = error => ({
   type: actionTypes.AUTH_FAIL,
   payload: error
 });
 
-export const logout = () => {
-  localStorage.removeItem('login');
-  return {
-    type: actionTypes.AUTH_LOGOUT
-  }
-};
+export const logout = () => ({
+  type: actionTypes.AUTH_INITIATE_LOGOUT
+});
 
-const trackAuthTimeout = expTime => (
-  dispatch => {
-    setTimeout(() => dispatch(logout()), expTime * 1000);
-  }
-)
+export const logoutProceed = () => ({
+  type: actionTypes.AUTH_LOGOUT
+});
 
-export const auth = (email, password, signup) => (
-  dispatch => {
-    dispatch(authStart());
-    const url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/' + (signup ? 'signupNewUser' : 'verifyPassword') + '?key=' + process.env.REACT_APP_FIREBASE_KEY
-    const authData = {
-      email,
-      password,
-      returnSecureToken: true
-    };
-    axios.post(url, authData)
-      .then(res => {
-        localStorage.setItem('login', JSON.stringify({
-          idToken: res.data.idToken,
-          localId: res.data.localId,
-          expDate: new Date(new Date().getTime() + res.data.expiresIn * 1000),
-        }));
-        dispatch(authSuccess(res.data));
-        dispatch(trackAuthTimeout(res.data.expiresIn));
-      })
-      .catch(err => dispatch(authFail(err.response.data.error)));
-  }
-);
+export const trackAuthTimeout = expTime => ({
+  type: actionTypes.AUTH_SET_TIMEOUT,
+  payload: expTime
+});
+
+export const auth = (email, password, signup) => ({
+  type: actionTypes.AUTH_USER,
+  payload: { email, password, signup }
+});
 
 export const authCheckState = () => (
   dispatch => {
