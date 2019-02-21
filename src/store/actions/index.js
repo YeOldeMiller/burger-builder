@@ -9,7 +9,13 @@ export {
 export {
   orderProcess,
   orderInit,
-  fetchOrders
+  fetchOrders,
+  fetchOrdersFail,
+  fetchOrdersStart,
+  fetchOrdersSuccess,
+  orderStart,
+  orderSuccess,
+  orderFail
 } from './order';
 
 export {
